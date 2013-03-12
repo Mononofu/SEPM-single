@@ -60,7 +60,7 @@ int main(int argc, char** argv) {
     view->rootContext()->setContextProperty("ServerSelector", &serverSelector);
     view->setSource(QUrl("./ui/ui.qml"));
 
-    window->setGeometry(100, 100, 800, 480);
+    window->setGeometry(100, 100, 800, 180);
     window->setCentralWidget(view);
     window->show();
 

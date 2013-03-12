@@ -25,7 +25,9 @@ Rectangle {
 
     Rectangle {
         id: server_config
-        anchors.centerIn: parent
+        anchors.top: parent.top
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.topMargin: 35
         width: 500
 
         Rectangle {
@@ -38,10 +40,11 @@ Rectangle {
             height: 28
         }
 
-        LineInput {
+        LineEdit {
             id: server
             width: 300
             text: "selinux.inso.tuwien.ac.at"
+            hint: "server"
             focus: true
             anchors.left: desc.right
             anchors.leftMargin: 7
@@ -59,21 +62,23 @@ Rectangle {
             height: 28
         }
 
-        LineInput {
+        LineEdit {
             id: port
             anchors.left: colon.right
             anchors.leftMargin: 5
             width: 80
             text: "1337"
+            hint: "port"
             focus: true
         }
 
-        LineInput {
+        LineEdit {
             id: cert
             anchors.left: port.right
             anchors.leftMargin: 20
             width: 100
             text: "ca.crt"
+            hint: "certificate"
             focus: true
         }
     }
@@ -95,7 +100,7 @@ Rectangle {
             height: 28
         }
 
-        LineInput {
+        LineEdit {
             id: msg
             width: 300
             text: "Hello world"

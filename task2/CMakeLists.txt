@@ -55,7 +55,7 @@ add_custom_target( HEADER_Resources ALL SOURCES ${HEADER_FILES_LIST} )
 
 # copy resources to build dir
 add_custom_command(OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/ui"
-    COMMAND cmake -E copy_directory "${CMAKE_CURRENT_SOURCE_DIR}/ui" "${CMAKE_CURRENT_BINARY_DIR}/ui")
+    COMMAND cmake -E create_symlink "${CMAKE_CURRENT_SOURCE_DIR}/ui" "${CMAKE_CURRENT_BINARY_DIR}/ui")
 list(APPEND copy_deps "${CMAKE_CURRENT_BINARY_DIR}/ui")
 
 add_custom_command(OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/ca.crt"
