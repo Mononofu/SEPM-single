@@ -2,7 +2,13 @@
 #include <boost/format.hpp>
 #include <Ice/Ice.h>
 #include <IceSSL/IceSSL.h>
+
 #include "SecureDistributedChat.h"
+#include "ServerSelector.h"
+
+#include <QApplication>
+#include <QtDeclarative/QDeclarativeView>
+#include <QtDeclarative/QDeclarativeContext>
 
 namespace po = boost::program_options;
 using namespace std;
@@ -33,6 +39,22 @@ int main(int argc, char** argv) {
   if(vm.count("help")) {
     cout << desc << "\n";
     return 1;
+  }
+
+  if(!vm.count("server") && !vm.count("port") && !vm.count("certificate-path")) {
+    QApplication a(argc, argv);
+
+    ServerSelector serverSelector;
+
+    QDeclarativeView view;
+    view.setResizeMode(QDeclarativeView::SizeRootObjectToView);
+    view.rootContext()->setContextProperty("ServerSelector", &serverSelector);
+    view.setSource(QUrl("./ui.qml"));
+
+    view.setGeometry(100, 100, 800, 480);
+    view.show();
+
+    return a.exec();
   }
 
   require(vm.count("server"), "please specify a server");
