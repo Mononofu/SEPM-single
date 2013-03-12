@@ -15,8 +15,8 @@ void require(int option, string msg) {
 }
 
 int main(int argc, char** argv) {
-  Ice::CommunicatorPtr ic;
-  ic = Ice::initialize(argc, argv);
+  // Get the initialized property set.
+  Ice::PropertiesPtr props = Ice::createProperties(argc, argv);
 
   po::options_description desc("Allowed options");
   desc.add_options()
@@ -39,15 +39,29 @@ int main(int argc, char** argv) {
   require(vm.count("port"), "please specify a port");
   require(vm.count("certificate-path"), "please specify the path to a certificate");
 
+  boost::format connection_string = boost::format("Authentication:ssl -h %1% -p %2%");
+  string server = vm["server"].as<string>();
+  string port = vm["port"].as<string>();
+  string cert_path = vm["certificate-path"].as<string>();
+
+  Ice::CommunicatorPtr ic;
   try {
+    // Make sure that network and protocol tracing are off.
+    props->setProperty("Ice.Plugin.IceSSL", "IceSSL:createIceSSL");
+    props->setProperty("IceSSL.CertAuthFile", cert_path);
+
+    // Initialize a communicator with these properties.
+    Ice::InitializationData id;
+    id.properties = props;
+    Ice::CommunicatorPtr ic = Ice::initialize(id);
+
+
     Ice::PluginManagerPtr pluginMgr = ic->getPluginManager();
     Ice::PluginPtr plugin = pluginMgr->getPlugin("IceSSL");
     IceSSL::PluginPtr sslPlugin = IceSSL::PluginPtr::dynamicCast(plugin);
 
 
-    boost::format connection_string = boost::format("Authentication:ssl -h %1% -p %2%");
-    string server = vm["server"].as<string>();
-    string port = vm["port"].as<string>();
+    IceSSL::CertificatePtr cert = IceSSL::Certificate::load(cert_path);
 
     Ice::ObjectPrx base = ic->stringToProxy(
       (connection_string % server % port).str() );
