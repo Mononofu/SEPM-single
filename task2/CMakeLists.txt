@@ -1,3 +1,5 @@
+# http://qt-project.org/quarterly/view/using_cmake_to_build_qt_projects
+
 cmake_minimum_required(VERSION 2.6)
 project(task2)
 

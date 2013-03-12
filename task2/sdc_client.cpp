@@ -1,14 +1,12 @@
 #include <boost/program_options.hpp>
-#include <boost/format.hpp>
-#include <Ice/Ice.h>
-#include <IceSSL/IceSSL.h>
-
-#include "SecureDistributedChat.h"
 #include "ServerSelector.h"
+#include "Chat.h"
 
 #include <QApplication>
 #include <QtDeclarative/QDeclarativeView>
 #include <QtDeclarative/QDeclarativeContext>
+#include <Ice/Ice.h>
+
 
 namespace po = boost::program_options;
 using namespace std;
@@ -22,8 +20,6 @@ void require(int option, string msg) {
 
 int main(int argc, char** argv) {
   // Get the initialized property set.
-  Ice::PropertiesPtr props = Ice::createProperties(argc, argv);
-
   po::options_description desc("Allowed options");
   desc.add_options()
     ("help,h", "produce help message")
@@ -44,12 +40,13 @@ int main(int argc, char** argv) {
   if(!vm.count("server") && !vm.count("port") && !vm.count("certificate-path")) {
     QApplication a(argc, argv);
 
-    ServerSelector serverSelector;
 
     QDeclarativeView view;
+    ServerSelector serverSelector(&view);
+
     view.setResizeMode(QDeclarativeView::SizeRootObjectToView);
     view.rootContext()->setContextProperty("ServerSelector", &serverSelector);
-    view.setSource(QUrl("./ui.qml"));
+    view.setSource(QUrl("./ui/ui.qml"));
 
     view.setGeometry(100, 100, 800, 480);
     view.show();
@@ -61,30 +58,18 @@ int main(int argc, char** argv) {
   require(vm.count("port"), "please specify a port");
   require(vm.count("certificate-path"), "please specify the path to a certificate");
 
-  boost::format connection_string = boost::format("Authentication:ssl -h %1% -p %2%");
+
   string server = vm["server"].as<string>();
   string port = vm["port"].as<string>();
   string cert_path = vm["certificate-path"].as<string>();
 
-  Ice::CommunicatorPtr ic;
   try {
-    // Make sure that network and protocol tracing are off.
-    props->setProperty("Ice.Plugin.IceSSL", "IceSSL:createIceSSL");
-    props->setProperty("IceSSL.CertAuthFile", cert_path);
-
-    // Initialize a communicator with these properties.
-    Ice::InitializationData id;
-    id.properties = props;
-    Ice::CommunicatorPtr ic = Ice::initialize(id);
-
-    Ice::ObjectPrx base = ic->stringToProxy(
-      (connection_string % server % port).str() );
-    sdc::AuthenticationIPrx auth = sdc::AuthenticationIPrx::checkedCast(base);
-    cout << auth->echo("hello world") << endl;
+    Chat c = Chat(server, port, cert_path);
+    cout << c.echo("Hello world") << endl;
   } catch (const Ice::Exception& e) {
-    std::cerr << e << std::endl;
+    std::cerr << "Failed to connect to server: " << e.what() << std::endl;
   }
-  if (ic) ic->destroy();
+
   return EXIT_SUCCESS;
 
 }
