@@ -1,8 +1,11 @@
 #include <boost/program_options.hpp>
 #include "ServerSelector.h"
 #include "Chat.h"
+#include "FileWatcher.h"
 
 #include <QApplication>
+#include <QMainWindow>
+#include <QtCore>
 #include <QtDeclarative/QDeclarativeView>
 #include <QtDeclarative/QDeclarativeContext>
 #include <Ice/Ice.h>
@@ -40,18 +43,32 @@ int main(int argc, char** argv) {
   if(!vm.count("server") && !vm.count("port") && !vm.count("certificate-path")) {
     QApplication a(argc, argv);
 
+    QMainWindow *window = new QMainWindow();
+    QDeclarativeView *view = new QDeclarativeView(window);
+    ServerSelector serverSelector(view);
 
-    QDeclarativeView view;
-    ServerSelector serverSelector(&view);
+    FileWatcher watcher(&serverSelector);
+    QThread *workerThread = new QThread();
 
-    view.setResizeMode(QDeclarativeView::SizeRootObjectToView);
-    view.rootContext()->setContextProperty("ServerSelector", &serverSelector);
-    view.setSource(QUrl("./ui/ui.qml"));
+    QObject::connect(workerThread, SIGNAL(started()), &watcher, SLOT(doWork()));
+    watcher.moveToThread(workerThread);
 
-    view.setGeometry(100, 100, 800, 480);
-    view.show();
+    // Starts an event loop, and emits workerThread->started()
+    workerThread->start();
 
-    return a.exec();
+    view->setResizeMode(QDeclarativeView::SizeRootObjectToView);
+    view->rootContext()->setContextProperty("ServerSelector", &serverSelector);
+    view->setSource(QUrl("./ui/ui.qml"));
+
+    window->setGeometry(100, 100, 800, 480);
+    window->setCentralWidget(view);
+    window->show();
+
+    int r = a.exec();
+    watcher.running = false;
+    workerThread->terminate();
+    watcher.cleanup();
+    return r;
   }
 
   require(vm.count("server"), "please specify a server");

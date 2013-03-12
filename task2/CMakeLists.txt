@@ -22,7 +22,7 @@ set(LIBS ${LIBS} boost_program_options)
 set(LIBS ${LIBS} ${QT_LIBRARIES})
 set(LIBS ${LIBS} ${QT_QTDECLARATIVE_LIBRARY})
 
-SET(task2_HEADERS ServerSelector.h)
+SET(task2_HEADERS ServerSelector.h FileWatcher.h)
 QT4_WRAP_CPP(task2_HEADERS_MOC ${task2_HEADERS})
 
 
@@ -45,8 +45,18 @@ COMMAND "${ZeroCIce_slice2cpp_BIN}"
 
 #end snippet
 
+
+add_custom_command(OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/ui"
+    COMMAND cmake -E copy_directory "${CMAKE_CURRENT_SOURCE_DIR}/ui" "${CMAKE_CURRENT_BINARY_DIR}/ui")
+list(APPEND copy_deps "${CMAKE_CURRENT_BINARY_DIR}/ui")
+
+add_custom_command(OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/ca.crt"
+    COMMAND cmake -E copy "${CMAKE_CURRENT_SOURCE_DIR}/ca.crt" "${CMAKE_CURRENT_BINARY_DIR}/ca.crt")
+list(APPEND copy_deps "${CMAKE_CURRENT_BINARY_DIR}/ca.crt")
+
+
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 
-add_executable(sdc_client sdc_client.cpp ${out_file} ${task2_HEADERS_MOC})
+add_executable(sdc_client sdc_client.cpp FileWatcher.cpp ${out_file} ${task2_HEADERS_MOC} ${copy_deps})
 
 target_link_libraries(sdc_client ${LIBS})
