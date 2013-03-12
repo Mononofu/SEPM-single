@@ -9,11 +9,12 @@ find_package(ZeroCIce REQUIRED)
 include_directories(${ZeroCIce_INCLUDE_DIR})
 set(LIBS ${LIBS} ${ZeroCIceCore_LIBRARY})
 set(LIBS ${LIBS} ${ZeroCIceUtil_LIBRARY})
+set(LIBS ${LIBS} ${ZeroCIceSSL_LIBRARY})
 set(LIBS ${LIBS} boost_program_options)
 
 #begin snippet
 #next lines are for creating .h & .cpp files out of .ice Files
-set(out_dir "${CMAKE_CURRENT_BINARY_DIR}")
+set(out_dir "${CMAKE_CURRENT_SOURCE_DIR}")
 set(out_file "${out_dir}/SecureDistributedChat.cpp")
 
 add_custom_command(OUTPUT
@@ -28,10 +29,10 @@ COMMAND "${ZeroCIce_slice2cpp_BIN}"
   "${CMAKE_CURRENT_SOURCE_DIR}/SecureDistributedChat.ice"
 )
 
-set( EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_BINARY_DIR} )
 #end snippet
 
+include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 
-add_executable(sdc_client sdc_client.cpp)
+add_executable(sdc_client sdc_client.cpp ${out_file})
 
 target_link_libraries(sdc_client ${LIBS})
