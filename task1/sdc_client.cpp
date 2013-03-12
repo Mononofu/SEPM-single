@@ -55,14 +55,6 @@ int main(int argc, char** argv) {
     id.properties = props;
     Ice::CommunicatorPtr ic = Ice::initialize(id);
 
-
-    Ice::PluginManagerPtr pluginMgr = ic->getPluginManager();
-    Ice::PluginPtr plugin = pluginMgr->getPlugin("IceSSL");
-    IceSSL::PluginPtr sslPlugin = IceSSL::PluginPtr::dynamicCast(plugin);
-
-
-    IceSSL::CertificatePtr cert = IceSSL::Certificate::load(cert_path);
-
     Ice::ObjectPrx base = ic->stringToProxy(
       (connection_string % server % port).str() );
     sdc::AuthenticationIPrx auth = sdc::AuthenticationIPrx::checkedCast(base);
