@@ -20,10 +20,10 @@ int main(int argc, char** argv) {
 
   po::options_description desc("Allowed options");
   desc.add_options()
-  ("help,h", "produce help message")
-  ("server,s", po::value<string>(), "set server name")
-  ("port,p", po::value<string>(), "set port")
-  ("certificate-path,c", po::value<string>(), "set path to certificate")
+    ("help,h", "produce help message")
+    ("server,s", po::value<string>(), "set server name")
+    ("port,p", po::value<string>(), "set port")
+    ("certificate-path,c", po::value<string>(), "set path to certificate")
   ;
 
   po::variables_map vm;
