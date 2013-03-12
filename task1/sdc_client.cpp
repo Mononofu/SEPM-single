@@ -1,4 +1,5 @@
 #include <boost/program_options.hpp>
+#include <Ice/Ice.h>
 
 namespace po = boost::program_options;
 using namespace std;
