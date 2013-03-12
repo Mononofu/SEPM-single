@@ -45,7 +45,15 @@ COMMAND "${ZeroCIce_slice2cpp_BIN}"
 
 #end snippet
 
+# hack to show files in Qt Creator
+FILE(GLOB QML_FILES_LIST "${CMAKE_CURRENT_SOURCE_DIR}/ui/*.qml")
+add_custom_target( QML_Resources ALL SOURCES ${QML_FILES_LIST} )
 
+FILE(GLOB HEADER_FILES_LIST "${CMAKE_CURRENT_SOURCE_DIR}/*.h")
+add_custom_target( HEADER_Resources ALL SOURCES ${HEADER_FILES_LIST} )
+
+
+# copy resources to build dir
 add_custom_command(OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/ui"
     COMMAND cmake -E copy_directory "${CMAKE_CURRENT_SOURCE_DIR}/ui" "${CMAKE_CURRENT_BINARY_DIR}/ui")
 list(APPEND copy_deps "${CMAKE_CURRENT_BINARY_DIR}/ui")
