@@ -15,16 +15,21 @@ void FileWatcher::watch(string dir) {
                          IN_MODIFY | IN_CREATE | IN_DELETE );
 
   char buffer[BUF_LEN];
+  qRegisterMetaType<QDeclarativeView*>("QDeclarativeView*");
   while(true) {
     int length = read( fd, buffer, BUF_LEN );
     if(length < 0) {
        //throw WatchException("failed to read events");
     } else if(running) {
-       QMetaObject::invokeMethod(selector, "open", Qt::QueuedConnection, Q_ARG(QUrl, QUrl("./ui/ui.qml")));
+      cout << "got change" << endl;
+      QMetaObject::invokeMethod(selector, "open", Qt::QueuedConnection,
+                                Q_ARG(QDeclarativeView*, views["ui/ui.qml"]),
+                                Q_ARG(QUrl, QUrl("./ui/ui.qml")));
     }
   }
 
 }
+
 
 void FileWatcher::cleanup() {
   inotify_rm_watch(fd, wd);

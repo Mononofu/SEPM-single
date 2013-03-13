@@ -38,7 +38,6 @@ import QtQuick 1.0
      states: State {
          name: "hasText"; when: textInput.text != ''
          PropertyChanges { target: typeSomething; opacity: 0 }
-         PropertyChanges { target: clear; opacity: 1 }
      }
 
      transitions: [

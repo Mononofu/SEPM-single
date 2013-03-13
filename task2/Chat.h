@@ -13,7 +13,8 @@ public:
   Chat(string server, string port, string cert_path) {
     boost::format connection_string = boost::format("Authentication:ssl -h %1% -p %2%");
     int argc = 1;
-    char *argv[] = {"sdc_client"};
+    char prog_name[] = "sdc_client";
+    char *argv[] = { prog_name };
     Ice::PropertiesPtr props = Ice::createProperties(argc, argv);
     try {
       props->setProperty("Ice.Plugin.IceSSL", "IceSSL:createIceSSL");

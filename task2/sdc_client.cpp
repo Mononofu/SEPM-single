@@ -49,6 +49,7 @@ int main(int argc, char** argv) {
 
     FileWatcher watcher(&serverSelector);
     QThread *workerThread = new QThread();
+    watcher.addWatch(view, "ui/ui.qml");
 
     QObject::connect(workerThread, SIGNAL(started()), &watcher, SLOT(doWork()));
     watcher.moveToThread(workerThread);

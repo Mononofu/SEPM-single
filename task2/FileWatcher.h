@@ -17,10 +17,15 @@ public slots:
 
 public:
   FileWatcher(ServerSelector *selector) : selector(selector) { }
+  void addWatch(QDeclarativeView *view, QString layout) {
+    views[layout] = view;
+  }
   void watch(string dir);
   void cleanup();
   bool running;
+
 private:
+  QMap<QString, QDeclarativeView*> views;
   ServerSelector *selector;
   int wd;
   int fd;
