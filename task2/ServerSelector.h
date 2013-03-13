@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QString>
+#include <QFileDialog>
 #include <QtDeclarative/QDeclarativeView>
 #include <QtDeclarative/QDeclarativeEngine>
 
@@ -19,6 +20,10 @@ public:
     if(!chat) return QString("no server set");
     string reply = chat->echo(text.toUtf8().constData());
     return QString::fromStdString(reply);
+  }
+
+  Q_INVOKABLE QString browse() const {
+      return QFileDialog::getOpenFileName(view, tr("Open File"), cert, tr("Certificates (*.crt);;All files (*.*)"));
   }
 
   Q_INVOKABLE bool setServer(const QString &server, const QString &port, const QString &cert) {
@@ -56,7 +61,7 @@ public slots:
     view->show();
   }
 
-  void open(QDeclarativeView*& view, const QUrl &url) {
+  void open(QDeclarativeView* view, const QUrl &url) {
     view->engine()->clearComponentCache();
     view->setSource(url);
     view->setGeometry(100, 100, 800, 480);

@@ -15,6 +15,13 @@ Rectangle {
         ServerSelector.reload()
     }
 
+    function browse() {
+        var fileName = ServerSelector.browse()
+        if("" != fileName) {
+            cert.text = fileName
+        }
+    }
+
     anchors.fill: parent
 
     Image {
@@ -74,12 +81,39 @@ Rectangle {
 
         LineEdit {
             id: cert
-            anchors.left: port.right
-            anchors.leftMargin: 20
-            width: 100
+            anchors.left: server.left
+            anchors.leftMargin: -110
+            anchors.top: server.bottom
+            anchors.topMargin: 10
+            width: 475
             text: "ca.crt"
             hint: "certificate"
             focus: true
+        }
+
+
+        Rectangle {
+            id: btn_browse
+
+            property bool pressed: false
+
+            width: 20; height: 28
+            anchors.left: cert.right
+            anchors.leftMargin: 5
+            anchors.top: server.bottom
+            anchors.topMargin: 10
+            radius: 6
+            color: pressed ? "gray" : "white"
+
+            Text {
+                anchors.centerIn: parent
+                text: "..."
+            }
+
+            MouseArea {
+                anchors.fill: parent
+                onClicked: { browse() }
+            }
         }
     }
 
@@ -88,7 +122,7 @@ Rectangle {
         id: reply_rect
         anchors.top: server_config.bottom
         anchors.left: server_config.left
-        anchors.topMargin: 35
+        anchors.topMargin: 100
 
         Rectangle {
             id: msg_desc
@@ -127,28 +161,6 @@ Rectangle {
         height: 28
     }
 
-
-    Rectangle {
-        id: btn_reload
-
-        property bool pressed: false
-
-        width: 100; height: 40
-        anchors.right: parent.right; anchors.rightMargin: 20
-        anchors.bottom: parent.bottom; anchors.bottomMargin: 80
-        radius: 6
-        color: pressed ? "gray" : "white"
-
-        Text {
-            anchors.centerIn: parent
-            text: "Reload"
-        }
-
-        MouseArea {
-            anchors.fill: parent
-            onClicked: { reload() }
-        }
-    }
 
     Rectangle {
         id: button
