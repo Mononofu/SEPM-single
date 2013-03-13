@@ -47,15 +47,9 @@ int main(int argc, char** argv) {
     QDeclarativeView *view = new QDeclarativeView(window);
     ServerSelector serverSelector(view);
 
-    FileWatcher watcher(&serverSelector);
-    QThread *workerThread = new QThread();
-    watcher.addWatch(view, "ui/ui.qml");
-
-    QObject::connect(workerThread, SIGNAL(started()), &watcher, SLOT(doWork()));
-    watcher.moveToThread(workerThread);
-
-    // Starts an event loop, and emits workerThread->started()
-    workerThread->start();
+    FileWatcher watcher;
+    watcher.addWatch(view, "./ui/ui.qml");
+    watcher.start("./ui");
 
     view->setResizeMode(QDeclarativeView::SizeRootObjectToView);
     view->rootContext()->setContextProperty("ServerSelector", &serverSelector);
@@ -65,11 +59,7 @@ int main(int argc, char** argv) {
     window->setCentralWidget(view);
     window->show();
 
-    int r = a.exec();
-    watcher.running = false;
-    workerThread->terminate();
-    watcher.cleanup();
-    return r;
+    return a.exec();
   }
 
   require(vm.count("server"), "please specify a server");

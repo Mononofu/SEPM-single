@@ -68,6 +68,6 @@ list(APPEND copy_deps "${CMAKE_CURRENT_BINARY_DIR}/ca.crt")
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 
-add_executable(sdc_client sdc_client.cpp FileWatcher.cpp ${out_file} ${task2_HEADERS_MOC} ${copy_deps})
+add_executable(sdc_client sdc_client.cpp FileWatcher.cpp NotifyPipe.cpp ${out_file} ${task2_HEADERS_MOC} ${copy_deps})
 
 target_link_libraries(sdc_client ${LIBS})

@@ -48,26 +48,6 @@ public:
     return true;
   }
 
-  Q_INVOKABLE void reload() const {
-    QMetaObject::invokeMethod(const_cast<ServerSelector*>(this), "open", Qt::QueuedConnection,
-      Q_ARG(QUrl, QUrl("./ui/ui.qml")));
-  }
-
-public slots:
-  void open(const QUrl &url) {
-    view->engine()->clearComponentCache();
-    view->setSource(url);
-    view->setGeometry(100, 100, 800, 480);
-    view->show();
-  }
-
-  void open(QDeclarativeView* view, const QUrl &url) {
-    view->engine()->clearComponentCache();
-    view->setSource(url);
-    view->setGeometry(100, 100, 800, 480);
-    view->show();
-  }
-
 protected:
   QDeclarativeView *view;
   Chat* chat;

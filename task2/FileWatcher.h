@@ -1,34 +1,33 @@
 #include <string>
 #include <QtDeclarative/QDeclarativeView>
-#include <QtDeclarative/QDeclarativeEngine>
 #include <QObject>
-#include "ServerSelector.h"
+#include "NotifyPipe.h"
+#include <QFuture>
 
 using namespace std;
 
 class FileWatcher : public QObject {
   Q_OBJECT
 
-public slots:
-  void doWork() {
-    running = true;
-    watch("./ui");
-  }
-
 public:
-  FileWatcher(ServerSelector *selector) : selector(selector) { }
+  ~FileWatcher() {
+    stop();
+  }
   void addWatch(QDeclarativeView *view, QString layout) {
     views[layout] = view;
   }
   void watch(string dir);
-  void cleanup();
-  bool running;
+  void start(string dir);
+  void stop();
+
+public slots:
+  void refreshView(QDeclarativeView* view, const QUrl &url);
 
 private:
   QMap<QString, QDeclarativeView*> views;
-  ServerSelector *selector;
-  int wd;
-  int fd;
+  NotifyPipe pipe;
+  QFuture<void> future;
+  bool running;
 };
 
 class WatchException : exception {

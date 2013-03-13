@@ -11,10 +11,6 @@ Rectangle {
         }
     }
 
-    function reload() {
-        ServerSelector.reload()
-    }
-
     function browse() {
         var fileName = ServerSelector.browse()
         if("" != fileName) {
