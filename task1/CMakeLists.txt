@@ -1,6 +1,9 @@
 cmake_minimum_required(VERSION 2.6)
 project(task1)
 
+set(CMAKE_C_COMPILER "gcc-4.6")
+set(CMAKE_CXX_COMPILER "/usr/bin/g++-4.6")
+
 set(CMAKE_CXX_FLAGS "-g -Wall -fpermissive")
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
