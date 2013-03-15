@@ -8,6 +8,14 @@ set(CMAKE_CXX_COMPILER "/usr/bin/g++-4.6")
 
 set(CMAKE_CXX_FLAGS "-g -Wall")
 
+if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_COMPILER_IS_GNUCPP)
+  option(COLOR_GCC "Use GCCFilter to color compiler output messages" ON)
+  set(COLOR_GCC_OPTIONS "-c -r -w" CACHE STRING "Arguments that are passed to gccfilter when output coloring is switchend on. Defaults to -c -r -w.")
+  if(COLOR_GCC)
+    set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE "${PROJECT_SOURCE_DIR}/cmake/gccfilter ${COLOR_GCC_OPTIONS}")
+  endif()
+endif()
+
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
 
 find_package(ZeroCIce REQUIRED)
@@ -24,6 +32,7 @@ set(LIBS ${LIBS} ${ZeroCIceSSL_LIBRARY})
 set(LIBS ${LIBS} boost_program_options)
 set(LIBS ${LIBS} ${QT_LIBRARIES})
 set(LIBS ${LIBS} ${QT_QTDECLARATIVE_LIBRARY})
+set(LIBS ${LIBS} bfd)   # for backward pretty stacktracing
 
 SET(task2_HEADERS ServerSelector.h FileWatcher.h)
 QT4_WRAP_CPP(task2_HEADERS_MOC ${task2_HEADERS})
@@ -68,6 +77,6 @@ list(APPEND copy_deps "${CMAKE_CURRENT_BINARY_DIR}/ca.crt")
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 
-add_executable(sdc_client sdc_client.cpp FileWatcher.cpp NotifyPipe.cpp ${out_file} ${task2_HEADERS_MOC} ${copy_deps})
+add_executable(sdc_client sdc_client.cpp FileWatcher.cpp NotifyPipe.cpp backward.cpp ${out_file} ${task2_HEADERS_MOC} ${copy_deps})
 
 target_link_libraries(sdc_client ${LIBS})
