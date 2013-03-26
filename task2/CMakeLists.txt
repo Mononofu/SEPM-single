@@ -8,6 +8,13 @@ set(CMAKE_CXX_COMPILER "/usr/bin/g++-4.6")
 
 set(CMAKE_CXX_FLAGS "-g -Wall")
 
+# only enable pretty backtraces if libbfd is available
+find_package(bfd)
+if(bfd_FOUND)
+  add_definitions(-DBACKWARD_HAS_BFD)
+  set(LIBS ${LIBS} ${bfd_LIBRARIES})   # for backward pretty stacktracing
+endif()
+
 # only enable gccfilter if necessary perl modules are present
 find_package(PerlModules COMPONENTS Regexp::Common Getopt::ArgvFile Getopt::Long Term::ANSIColor)
 if(Regexp::Common_FOUND AND Getopt::ArgvFile_FOUND AND Getopt::Long_FOUND AND Term::ANSIColor_FOUND)
