@@ -43,7 +43,6 @@ set(LIBS ${LIBS} ${ZeroCIceSSL_LIBRARY})
 set(LIBS ${LIBS} boost_program_options)
 set(LIBS ${LIBS} ${QT_LIBRARIES})
 set(LIBS ${LIBS} ${QT_QTDECLARATIVE_LIBRARY})
-set(LIBS ${LIBS} bfd)   # for backward pretty stacktracing
 
 SET(task2_HEADERS ServerSelector.h FileWatcher.h)
 QT4_WRAP_CPP(task2_HEADERS_MOC ${task2_HEADERS})
