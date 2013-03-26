@@ -8,11 +8,15 @@ set(CMAKE_CXX_COMPILER "/usr/bin/g++-4.6")
 
 set(CMAKE_CXX_FLAGS "-g -Wall")
 
-if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_COMPILER_IS_GNUCPP)
-  option(COLOR_GCC "Use GCCFilter to color compiler output messages" ON)
-  set(COLOR_GCC_OPTIONS "-c -r -w" CACHE STRING "Arguments that are passed to gccfilter when output coloring is switchend on. Defaults to -c -r -w.")
-  if(COLOR_GCC)
-    set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE "${PROJECT_SOURCE_DIR}/cmake/gccfilter ${COLOR_GCC_OPTIONS}")
+# only enable gccfilter if necessary perl modules are present
+find_package(PerlModules COMPONENTS Regexp::Common Getopt::ArgvFile Getopt::Long Term::ANSIColor)
+if(Regexp::Common_FOUND AND Getopt::ArgvFile_FOUND AND Getopt::Long_FOUND AND Term::ANSIColor_FOUND)
+  if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_COMPILER_IS_GNUCPP)
+    option(COLOR_GCC "Use GCCFilter to color compiler output messages" ON)
+    set(COLOR_GCC_OPTIONS "-c -r -w" CACHE STRING "Arguments that are passed to gccfilter when output coloring is switchend on. Defaults to -c -r -w.")
+    if(COLOR_GCC)
+      set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE "${PROJECT_SOURCE_DIR}/cmake/gccfilter ${COLOR_GCC_OPTIONS}")
+    endif()
   endif()
 endif()
 
