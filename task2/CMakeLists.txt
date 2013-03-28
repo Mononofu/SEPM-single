@@ -8,6 +8,9 @@ set(CMAKE_CXX_COMPILER "/usr/bin/g++-4.6")
 
 set(CMAKE_CXX_FLAGS "-g -Wall")
 
+
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
+
 # only enable pretty backtraces if libbfd is available
 find_package(bfd)
 if(bfd_FOUND)
@@ -27,7 +30,6 @@ if(Regexp::Common_FOUND AND Getopt::ArgvFile_FOUND AND Getopt::Long_FOUND AND Te
   endif()
 endif()
 
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
 
 find_package(ZeroCIce REQUIRED)
 
@@ -65,6 +67,7 @@ COMMAND "${ZeroCIce_slice2cpp_BIN}"
   "${CMAKE_CURRENT_SOURCE_DIR}/SecureDistributedChat.ice"
 )
 
+set( EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_BINARY_DIR} )
 #end snippet
 
 # hack to show files in Qt Creator
