@@ -19,7 +19,7 @@ public:
     try {
       props->setProperty("Ice.Plugin.IceSSL", "IceSSL:createIceSSL");
       props->setProperty("IceSSL.CertAuthFile", cert_path);
-      props->setProperty("Ice.Override.ConnectTimeout", "2000");
+      props->setProperty("Ice.Override.ConnectTimeout", "1000");
 
       // Initialize a communicator with these properties.
       Ice::InitializationData id;

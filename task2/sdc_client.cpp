@@ -32,8 +32,14 @@ int main(int argc, char** argv) {
   ;
 
   po::variables_map vm;
-  po::store(po::parse_command_line(argc, argv, desc), vm);
-  po::notify(vm);
+  try {
+    po::store(po::parse_command_line(argc, argv, desc), vm);
+    po::notify(vm);
+  } catch(po::unknown_option &ex) {
+    cerr << "sdc_client: " << ex.what() << endl;
+    cerr << "Try `sdc_client --help' for more information." << endl;
+    return 1;
+  }
 
   if(vm.count("help")) {
     cout << desc << "\n";
@@ -74,8 +80,16 @@ int main(int argc, char** argv) {
   try {
     Chat c = Chat(server, port, cert_path);
     cout << c.echo("Hello world") << endl;
+  } catch (const Ice::ConnectTimeoutException& e) {
+    cerr << "timeout while establishing connection - check server and port" << endl;
+  } catch (const Ice::PluginInitializationException& e) {
+    cerr << "failed to initialize SSL plugin - are you using the correct certificate?" << endl;
+  } catch (const Ice::EndpointParseException& e) {
+    cerr << "Failed to create endpoint, check server and port: \n  " << e.str << endl;
+  } catch (const Ice::DNSException& e) {
+    cerr << "error resolving hostname: " << e.host << endl;
   } catch (const Ice::Exception& e) {
-    std::cerr << "Failed to connect to server: " << e.what() << std::endl;
+    cerr << e << endl;
   }
 
   return EXIT_SUCCESS;

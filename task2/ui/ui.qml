@@ -4,8 +4,9 @@ Rectangle {
     id: rect
 
     function sendMessage() {
-        if(!ServerSelector.setServer(server.text, port.text, cert.text)) {
-            reply.text = "Failed to set server"
+        var error = ServerSelector.setServer(server.text, port.text, cert.text)
+        if("" != error) {
+            reply.text = error
         } else {
             reply.text = "Reply: " + ServerSelector.echo(msg.text)
         }

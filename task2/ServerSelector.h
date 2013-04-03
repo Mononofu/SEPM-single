@@ -26,9 +26,9 @@ public:
       return QFileDialog::getOpenFileName(view, tr("Open File"), cert, tr("Certificates (*.crt);;All files (*.*)"));
   }
 
-  Q_INVOKABLE bool setServer(const QString &server, const QString &port, const QString &cert) {
-    if(server == this->server && port == this->port && cert == this->cert)
-      return chat != NULL;
+  Q_INVOKABLE QString setServer(const QString &server, const QString &port, const QString &cert) {
+    if(chat != NULL && server == this->server && port == this->port && cert == this->cert)
+      return "";
 
     this->server = server;
     this->port = port;
@@ -37,15 +37,24 @@ public:
     if(chat)
       delete this->chat;
 
+    this->chat = NULL;
     try {
       this->chat = new Chat(server.toUtf8().constData(),
                     port.toUtf8().constData(),
                     cert.toUtf8().constData());
+    } catch (const Ice::ConnectTimeoutException& e) {
+      return "timeout while establishing connection - check server and port";
+    } catch (const Ice::PluginInitializationException& e) {
+      return "failed to initialize SSL plugin - are you using the correct certificate?";
+    } catch (const Ice::EndpointParseException& e) {
+      return QString::fromStdString("Failed to create endpoint, check server and port: \n  " + e.str);
+    } catch (const Ice::DNSException& e) {
+      return QString::fromStdString("error resolving hostname: " + e.host);
     } catch (const Ice::Exception& e) {
-      this->chat = NULL;
-      return false;
+      return QString::fromStdString(e.what());
     }
-    return true;
+
+    return "";
   }
 
 protected:
