@@ -18,6 +18,7 @@ int main(int argc, char** argv) {
   // Get the initialized property set.
   Ice::PropertiesPtr props = Ice::createProperties(argc, argv);
 
+  // initialize command line option parsing
   po::options_description desc("Allowed options");
   desc.add_options()
     ("help,h", "produce help message")
@@ -26,6 +27,7 @@ int main(int argc, char** argv) {
     ("certificate-path,c", po::value<string>(), "set path to certificate")
   ;
 
+  // try to actualize parse the options
   po::variables_map vm;
   try {
     po::store(po::parse_command_line(argc, argv, desc), vm);
@@ -45,16 +47,19 @@ int main(int argc, char** argv) {
   require(vm.count("port"), "please specify a port");
   require(vm.count("certificate-path"), "please specify the path to a certificate");
 
+  // get values out of the options
   boost::format connection_string = boost::format("Authentication:ssl -h %1% -p %2%");
   string server = vm["server"].as<string>();
   string port = vm["port"].as<string>();
   string cert_path = vm["certificate-path"].as<string>();
 
+  // try to connect to the server using Ice
   Ice::CommunicatorPtr ic;
   try {
-    // Make sure that network and protocol tracing are off.
+    // enable the SSL plugin for secure connections
     props->setProperty("Ice.Plugin.IceSSL", "IceSSL:createIceSSL");
     props->setProperty("IceSSL.CertAuthFile", cert_path);
+    // necessary so invalid connections will time out
     props->setProperty("Ice.Override.ConnectTimeout", "1000");
 
     // Initialize a communicator with these properties.
@@ -62,10 +67,12 @@ int main(int argc, char** argv) {
     id.properties = props;
     Ice::CommunicatorPtr ic = Ice::initialize(id);
 
+    // call echo method
     Ice::ObjectPrx base = ic->stringToProxy(
       (connection_string % server % port).str() );
     sdc::AuthenticationIPrx auth = sdc::AuthenticationIPrx::checkedCast(base);
     cout << auth->echo("hello world") << endl;
+    // catch all manners of error cases
   } catch (const Ice::ConnectTimeoutException& e) {
     cerr << "timeout while establishing connection - check server and port" << endl;
   } catch (const Ice::PluginInitializationException& e) {
