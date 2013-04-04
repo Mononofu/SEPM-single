@@ -9,6 +9,7 @@
 
 #include "Chat.h"
 
+// backing class for QML view, handles events and calls to Ice
 class ServerSelector : public QObject
 {
   Q_OBJECT
@@ -16,16 +17,19 @@ public:
   ServerSelector(QDeclarativeView *view, QObject *parent = 0)
     : QObject(parent), view(view), chat(NULL) { }
 
+  // echo string over Ice
   Q_INVOKABLE QString echo(const QString &text) const {
     if(!chat) return QString("no server set");
     string reply = chat->echo(text.toUtf8().constData());
     return QString::fromStdString(reply);
   }
 
+  // open native file dialog to browse for cert file
   Q_INVOKABLE QString browse() const {
       return QFileDialog::getOpenFileName(view, tr("Open File"), cert, tr("Certificates (*.crt);;All files (*.*)"));
   }
 
+  // create Chat object / connection using ice with values set in GUI
   Q_INVOKABLE QString setServer(const QString &server, const QString &port, const QString &cert) {
     if(chat != NULL && server == this->server && port == this->port && cert == this->cert)
       return "";

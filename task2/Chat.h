@@ -8,8 +8,10 @@
 
 using namespace std;
 
+// wrapper for Ice boilerplate
 class Chat {
 public:
+  // constructor tries to set up connection to server, throws if it fails
   Chat(string server, string port, string cert_path) {
     boost::format connection_string = boost::format("Authentication:ssl -h %1% -p %2%");
     int argc = 1;
@@ -17,8 +19,10 @@ public:
     char *argv[] = { prog_name };
     Ice::PropertiesPtr props = Ice::createProperties(argc, argv);
     try {
+      // enable the SSL plugin for secure connections
       props->setProperty("Ice.Plugin.IceSSL", "IceSSL:createIceSSL");
       props->setProperty("IceSSL.CertAuthFile", cert_path);
+      // necessary so invalid connections will time out
       props->setProperty("Ice.Override.ConnectTimeout", "1000");
 
       // Initialize a communicator with these properties.
@@ -36,11 +40,12 @@ public:
     }
   }
 
+  // automatically close connection on destruction
   ~Chat() {
     if (ic) ic->destroy();
   }
 
-
+  // wrapper for echo method
   string echo(string s) {
     return auth->echo(s);
   }

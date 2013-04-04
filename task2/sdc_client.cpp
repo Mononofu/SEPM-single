@@ -24,6 +24,8 @@ void require(int option, string msg) {
 int main(int argc, char** argv) {
   // Get the initialized property set.
   po::options_description desc("Allowed options");
+
+  // initialize command line option parsing
   desc.add_options()
     ("help,h", "produce help message")
     ("server,s", po::value<string>(), "set server name")
@@ -31,6 +33,7 @@ int main(int argc, char** argv) {
     ("certificate-path,c", po::value<string>(), "set path to certificate")
   ;
 
+  // try to actualize parse the options
   po::variables_map vm;
   try {
     po::store(po::parse_command_line(argc, argv, desc), vm);
@@ -46,6 +49,7 @@ int main(int argc, char** argv) {
     return 1;
   }
 
+  // if no options are specified, show a gui
   if(!vm.count("server") && !vm.count("port") && !vm.count("certificate-path")) {
     QApplication a(argc, argv);
 
@@ -53,6 +57,7 @@ int main(int argc, char** argv) {
     QDeclarativeView *view = new QDeclarativeView(window);
     ServerSelector serverSelector(view);
 
+    // watcher to auto-reload qml view on changes
     FileWatcher watcher;
     watcher.addWatch(view, "./ui/ui.qml");
     watcher.start("./ui");
@@ -73,11 +78,13 @@ int main(int argc, char** argv) {
   require(vm.count("certificate-path"), "please specify the path to a certificate");
 
 
+  // get values out of the options
   string server = vm["server"].as<string>();
   string port = vm["port"].as<string>();
   string cert_path = vm["certificate-path"].as<string>();
 
   try {
+    // create connection to server and try to send echo
     Chat c = Chat(server, port, cert_path);
     cout << c.echo("Hello world") << endl;
   } catch (const Ice::ConnectTimeoutException& e) {
